@@ -3,14 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Unofficial Mocky — Liquid Glass HTTP Studio</title>
+  <title>Unofficial Mocky — HTTP Response Studio</title>
+  
+  <!-- Custom Logo & Preview Meta -->
+  <link rel="icon" type="image/jpeg" href="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg">
+  <meta property="og:image" content="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg">
+  <meta property="og:title" content="Unofficial Mocky Studio">
+  <meta property="og:description" content="Generate custom HTTP responses and mock endpoints instantly.">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
-      --glass-bg: rgba(22, 24, 38, 0.52);
-      --glass-border: rgba(255, 255, 255, 0.16);
-      --glass-highlight: rgba(255, 255, 255, 0.28);
-      --input-glass: rgba(10, 12, 22, 0.55);
+      --bg-base: #070913;
+      --panel-bg: rgba(18, 22, 38, 0.65);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --panel-border-hover: rgba(255, 255, 255, 0.22);
+      --input-bg: rgba(10, 13, 24, 0.7);
+      --accent-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #3b82f6 100%);
     }
 
     * {
@@ -19,225 +28,151 @@
     }
 
     body {
-      background-color: #06070d;
-      color: #f8fafc;
+      background-color: var(--bg-base);
+      color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
       overflow-x: hidden;
       min-height: 100vh;
     }
 
-    .liquid-canvas {
+    .ambient-bg {
       position: fixed;
       inset: 0;
       z-index: -1;
       overflow: hidden;
-      background: radial-gradient(circle at 50% 0%, #13162b 0%, #05060b 100%);
+      background: radial-gradient(circle at 50% 0%, #151a36 0%, #070913 100%);
     }
 
-    .orb {
+    .glow-blob {
       position: absolute;
       border-radius: 50%;
-      filter: blur(75px);
-      opacity: 0.65;
-      animation: floatOrb 18s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+      filter: blur(85px);
+      opacity: 0.5;
+      animation: drift 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
       will-change: transform;
     }
 
-    .orb-1 {
-      width: 420px;
-      height: 420px;
-      background: radial-gradient(circle, #6366f1 0%, #4338ca 70%);
-      top: -10%;
-      left: -8%;
-    }
+    .blob-1 { width: 450px; height: 450px; background: #4f46e5; top: -10%; left: -5%; }
+    .blob-2 { width: 400px; height: 400px; background: #db2777; bottom: -10%; right: -5%; animation-delay: -7s; }
 
-    .orb-2 {
-      width: 380px;
-      height: 380px;
-      background: radial-gradient(circle, #ec4899 0%, #8b5cf6 70%);
-      bottom: -8%;
-      right: -5%;
-      animation-delay: -6s;
-      animation-duration: 22s;
-    }
-
-    .orb-3 {
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, #06b6d4 0%, #3b82f6 75%);
-      top: 38%;
-      left: 55%;
-      animation-delay: -11s;
-      animation-duration: 25s;
-    }
-
-    @keyframes floatOrb {
+    @keyframes drift {
       0% { transform: translate3d(0, 0, 0) scale(1); }
-      50% { transform: translate3d(45px, -35px, 0) scale(1.12); }
-      100% { transform: translate3d(-35px, 40px, 0) scale(0.94); }
+      100% { transform: translate3d(40px, -40px, 0) scale(1.1); }
     }
 
-    .mac-window {
-      background: var(--glass-bg);
-      backdrop-filter: blur(30px) saturate(190%);
-      -webkit-backdrop-filter: blur(30px) saturate(190%);
-      border: 1px solid var(--glass-border);
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.55),
-        inset 0 1px 1px var(--glass-highlight),
-        inset 0 -1px 1px rgba(255, 255, 255, 0.05);
-      border-radius: 24px;
-      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    .glass-panel {
+      background: var(--panel-bg);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    .mac-window:hover {
-      border-color: rgba(255, 255, 255, 0.24);
-      box-shadow:
-        0 30px 70px rgba(0, 0, 0, 0.65),
-        inset 0 1.5px 1.5px rgba(255, 255, 255, 0.35);
+    .glass-panel:hover {
+      border-color: var(--panel-border-hover);
     }
 
-    .liquid-input {
-      background: var(--input-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      color: #f8fafc;
-      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .liquid-input:focus {
-      outline: none;
-      border-color: rgba(99, 102, 241, 0.85);
-      background: rgba(15, 18, 34, 0.78);
-      box-shadow:
-        0 0 0 4px rgba(99, 102, 241, 0.2),
-        inset 0 1px 2px rgba(255, 255, 255, 0.2);
-      transform: translateY(-1px);
-    }
-
-    .liquid-btn {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(168, 85, 247, 0.92) 50%, rgba(59, 130, 246, 0.95) 100%);
-      background-size: 200% 200%;
-      border: 1px solid rgba(255, 255, 255, 0.32);
-      box-shadow:
-        0 12px 30px -6px rgba(99, 102, 241, 0.6),
-        inset 0 1.5px 1px rgba(255, 255, 255, 0.55),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.25);
-      border-radius: 16px;
-      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-      animation: liquidGradient 6s ease infinite;
-    }
-
-    .liquid-btn:hover {
-      transform: translateY(-2px) scale(1.01);
-      box-shadow:
-        0 18px 38px -6px rgba(139, 92, 246, 0.75),
-        inset 0 2px 2px rgba(255, 255, 255, 0.7);
-    }
-
-    .liquid-btn:active {
-      transform: translateY(1px) scale(0.985);
-    }
-
-    @keyframes liquidGradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .pill-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    .custom-input {
+      background: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 12px;
-      transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      color: #f8fafc;
+      transition: all 0.2s ease;
     }
 
-    .pill-btn:hover {
-      background: rgba(255, 255, 255, 0.16);
+    .custom-input:focus {
+      outline: none;
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+      background: rgba(10, 13, 24, 0.9);
+    }
+
+    .gradient-btn {
+      background: var(--accent-grad);
+      background-size: 200% 200%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      border-radius: 14px;
+      transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .gradient-btn:hover {
       transform: translateY(-1px);
+      box-shadow: 0 14px 30px -5px rgba(129, 140, 248, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
-    .pill-btn:active {
-      transform: scale(0.95);
+    .gradient-btn:active {
+      transform: translateY(1px);
     }
 
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.45);
+    .utility-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      transition: all 0.2s ease;
     }
 
-    .toast-enter {
-      animation: springPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    .utility-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
     }
 
-    @keyframes springPop {
-      0% { opacity: 0; transform: translateY(16px) scale(0.94); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
+    .animate-pop {
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.96) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
     }
   </style>
 </head>
-<body class="pb-12 selection:bg-indigo-500 selection:text-white">
-  <div class="liquid-canvas">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+<body class="pb-12">
+  <div class="ambient-bg">
+    <div class="glow-blob blob-1"></div>
+    <div class="glow-blob blob-2"></div>
   </div>
 
-  <header class="sticky top-3 z-30 mx-auto max-w-6xl px-4">
-    <div class="mac-window px-5 py-3.5 flex items-center justify-between">
-      <div class="flex items-center gap-3.5">
-        <div class="h-10 w-10 rounded-2xl liquid-btn flex items-center justify-center font-bold text-lg shadow-md">
-          M
-        </div>
+  <!-- Header -->
+  <header class="sticky top-3 z-30 mx-auto max-w-5xl px-4">
+    <div class="glass-panel px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg" alt="Logo" class="h-10 w-10 rounded-xl object-cover border border-white/20 shadow-md" />
         <div>
-          <h1 class="text-base sm:text-lg font-semibold tracking-tight text-white">Unofficial Mocky</h1>
-          <p class="text-[11px] sm:text-xs text-slate-300/80 font-mono truncate max-w-[180px] sm:max-w-xs" id="hostDisplay"></p>
+          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight">Unofficial Mocky</h1>
+          <p class="text-[11px] text-slate-400 font-mono truncate max-w-[200px] sm:max-w-xs" id="hostDisplay"></p>
         </div>
       </div>
-
-      <div class="flex items-center gap-2.5">
-        <span class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/30 shadow-inner">
-          <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          v3 Ready
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-medium">
+          <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          Online
         </span>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 pt-6 grid grid-cols-1 lg:grid-cols-12 gap-7">
+  <!-- Main Content Layout -->
+  <main class="max-w-5xl mx-auto px-4 pt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Form Section -->
     <section class="lg:col-span-7">
-      <div class="mac-window overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-white/10 flex items-center justify-between bg-white/[0.03]">
-          <div class="flex items-center gap-2">
-            <span class="dot bg-[#ff5f56]"></span>
-            <span class="dot bg-[#ffbd2e]"></span>
-            <span class="dot bg-[#27c93f]"></span>
-            <span class="ml-2 text-xs font-medium text-slate-300">New HTTP Response Studio</span>
-          </div>
-          <button type="button" id="sampleBtn" class="text-xs text-indigo-300 hover:text-white transition">
-            Load Sample
-          </button>
+      <div class="glass-panel p-5 sm:p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-sm font-semibold text-slate-200">Create HTTP Response</h2>
+          <button type="button" id="sampleBtn" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Load Template</button>
         </div>
 
-        <form id="mockForm" class="p-5 sm:p-6 space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <form id="mockForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1.5">Status Code</label>
-              <input type="number" id="status" value="200" min="100" max="599" required class="liquid-input w-full px-3.5 py-2.5 text-sm font-mono" />
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Status Code</label>
+              <input type="number" id="status" value="200" min="100" max="599" required class="custom-input w-full px-3 py-2 text-xs font-mono" />
             </div>
-
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1.5">Content-Type</label>
-              <select id="contentType" class="liquid-input w-full px-3.5 py-2.5 text-sm">
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Content-Type</label>
+              <select id="contentType" class="custom-input w-full px-3 py-2 text-xs">
                 <option value="application/json" selected>application/json</option>
                 <option value="text/plain">text/plain</option>
                 <option value="text/html">text/html</option>
@@ -245,131 +180,109 @@
                 <option value="application/xml">application/xml</option>
               </select>
             </div>
-
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1.5">Charset</label>
-              <select id="charset" class="liquid-input w-full px-3.5 py-2.5 text-sm">
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Charset</label>
+              <select id="charset" class="custom-input w-full px-3 py-2 text-xs">
                 <option value="UTF-8" selected>UTF-8</option>
                 <option value="ISO-8859-1">ISO-8859-1</option>
-                <option value="UTF-16">UTF-16</option>
               </select>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1.5">Expiration</label>
-              <select id="expiration" class="liquid-input w-full px-3.5 py-2.5 text-sm">
-                <option value="1year" selected>1 Year (Recommended)</option>
-                <option value="1month">1 Month</option>
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Expiration</label>
+              <select id="expiration" class="custom-input w-full px-3 py-2 text-xs">
+                <option value="1month" selected>1 Month (Recommended)</option>
+                <option value="1year">1 Year</option>
                 <option value="1week">1 Week</option>
                 <option value="1day">1 Day</option>
                 <option value="1hour">1 Hour</option>
                 <option value="10min">10 Minutes</option>
               </select>
             </div>
-
             <div>
-              <label class="block text-xs font-medium text-slate-300 mb-1.5">Secret Key</label>
-              <input type="text" id="secret" placeholder="Auto-filled if left blank" class="liquid-input w-full px-3.5 py-2.5 text-sm font-mono" />
+              <label class="block text-[11px] font-medium text-slate-400 mb-1">Secret Key</label>
+              <input type="text" id="secret" placeholder="Auto-generated if empty" class="custom-input w-full px-3 py-2 text-xs font-mono" />
             </div>
           </div>
 
           <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <label class="text-xs font-medium text-slate-300">Custom HTTP Headers</label>
-              <button type="button" id="addHeaderBtn" class="pill-btn px-2.5 py-1 text-xs text-indigo-200 font-medium">
-                + Add Header
-              </button>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-medium text-slate-400">Custom Headers</label>
+              <button type="button" id="addHeaderBtn" class="utility-btn px-2 py-0.5 text-[11px] text-indigo-300 font-medium">+ Add Header</button>
             </div>
             <div id="headersList" class="space-y-2"></div>
           </div>
 
           <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <label class="text-xs font-medium text-slate-300">HTTP Response Body</label>
-              <div class="flex gap-2">
-                <button type="button" id="rawTextBtn" class="pill-btn px-2.5 py-1 text-[11px] text-slate-200">Switch to Plain Text</button>
-                <button type="button" id="formatBtn" class="pill-btn px-2.5 py-1 text-[11px] text-indigo-200 font-medium">Format JSON</button>
-              </div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-medium text-slate-400">Response Body</label>
+              <button type="button" id="formatBtn" class="utility-btn px-2 py-0.5 text-[11px] text-indigo-300 font-medium">Format JSON</button>
             </div>
-            <textarea id="content" rows="9" class="liquid-input w-full p-3.5 font-mono text-xs leading-relaxed" placeholder="Paste code, JSON, or raw text here...">{
-  "status": 200,
-  "service": "unofficial-mocky",
-  "maintainer": "Priyanshi Kaur",
-  "message": "Liquid glass Mocky v3 endpoint is live!"
+            <textarea id="content" rows="8" class="custom-input w-full p-3 font-mono text-xs leading-relaxed" placeholder="Enter JSON, text, or HTML response...">{
+  "status": "success",
+  "message": "Endpoint configured successfully!"
 }</textarea>
           </div>
 
-          <div id="errorBanner" class="hidden p-3.5 rounded-2xl bg-rose-500/20 border border-rose-400/40 text-xs text-rose-200 toast-enter"></div>
+          <div id="errorBanner" class="hidden p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-xs text-rose-200 animate-pop"></div>
 
-          <button type="submit" id="submitBtn" class="liquid-btn w-full py-3.5 px-5 text-white font-semibold text-sm tracking-wide">
-            Generate Liquid Mock Endpoint
+          <button type="submit" id="submitBtn" class="gradient-btn w-full py-3 px-4 text-white font-semibold text-xs tracking-wide">
+            Generate Endpoint
           </button>
         </form>
       </div>
     </section>
 
-    <section class="lg:col-span-5 space-y-6">
-      <div id="resultBox" class="mac-window p-5 sm:p-6 hidden toast-enter">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2">
-            <span class="h-2.5 w-2.5 rounded-full bg-emerald-400"></span>
-            <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-300">Endpoint Ready</h3>
-          </div>
-          <span id="statusBadge" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-white/10 text-white border border-white/15">200 OK</span>
+    <!-- Right Result & History Section -->
+    <section class="lg:col-span-5 space-y-5">
+      <div id="resultBox" class="glass-panel p-5 hidden animate-pop">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">Ready</span>
+          <span id="statusBadge" class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-white/10 text-white">200 OK</span>
         </div>
 
-        <div class="space-y-3.5">
+        <div class="space-y-3">
           <div>
-            <label class="block text-xs text-slate-300 mb-1">Mock URL (v3)</label>
+            <label class="block text-[11px] text-slate-400 mb-1">Endpoint URL</label>
             <div class="flex gap-2">
-              <input id="mockUrl" readonly class="liquid-input w-full px-3 py-2 text-xs font-mono text-emerald-300" />
-              <button type="button" id="copyUrlBtn" class="pill-btn px-3.5 py-2 text-xs font-medium text-white shrink-0">Copy</button>
+              <input id="mockUrl" readonly class="custom-input w-full px-3 py-2 text-xs font-mono text-emerald-300 truncate" />
+              <button type="button" id="copyUrlBtn" class="utility-btn px-3 py-2 text-xs font-medium text-white shrink-0">Copy</button>
             </div>
           </div>
 
           <div>
-            <label class="block text-xs text-slate-300 mb-1">Secret Token</label>
+            <label class="block text-[11px] text-slate-400 mb-1">Secret Key</label>
             <div class="flex gap-2">
-              <input id="mockSecret" readonly class="liquid-input w-full px-3 py-2 text-xs font-mono text-amber-300" />
-              <button type="button" id="copySecretBtn" class="pill-btn px-3.5 py-2 text-xs font-medium text-white shrink-0">Copy</button>
+              <input id="mockSecret" readonly class="custom-input w-full px-3 py-2 text-xs font-mono text-amber-300 truncate" />
+              <button type="button" id="copySecretBtn" class="utility-btn px-3 py-2 text-xs font-medium text-white shrink-0">Copy</button>
             </div>
           </div>
 
-          <div class="pt-1 flex gap-2.5">
-            <button type="button" id="testLiveBtn" class="pill-btn flex-1 py-2.5 px-3 text-xs font-semibold text-indigo-200">
-              Preview Response
-            </button>
-            <a id="openUrlBtn" href="#" target="_blank" class="liquid-btn flex-1 py-2.5 px-3 text-xs font-semibold text-white text-center">
-              Open Raw Link
-            </a>
+          <div class="pt-1 flex gap-2">
+            <button type="button" id="testLiveBtn" class="utility-btn flex-1 py-2 px-3 text-xs font-semibold text-indigo-200">Preview</button>
+            <a id="openUrlBtn" href="#" target="_blank" class="gradient-btn flex-1 py-2 px-3 text-xs font-semibold text-white text-center">Open URL</a>
           </div>
 
-          <div id="livePreviewBox" class="hidden pt-2 toast-enter">
-            <pre id="livePreviewContent" class="liquid-input p-3 text-xs font-mono text-slate-200 overflow-x-auto max-h-44"></pre>
+          <div id="livePreviewBox" class="hidden pt-1 animate-pop">
+            <pre id="livePreviewContent" class="custom-input p-2.5 text-[11px] font-mono text-slate-200 overflow-x-auto max-h-36"></pre>
           </div>
         </div>
       </div>
 
-      <div class="mac-window overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-white/10 flex items-center justify-between bg-white/[0.03]">
-          <div class="flex items-center gap-2">
-            <span class="dot bg-[#ff5f56]"></span>
-            <span class="dot bg-[#ffbd2e]"></span>
-            <span class="dot bg-[#27c93f]"></span>
-            <span class="ml-2 text-xs font-medium text-slate-300">Recent Mocks</span>
-          </div>
-          <button id="clearHistoryBtn" class="text-xs text-rose-300 hover:text-rose-200 transition">Clear All</button>
+      <div class="glass-panel overflow-hidden">
+        <div class="px-5 py-3 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+          <h2 class="text-xs font-semibold text-slate-300">Recent History</h2>
+          <button id="clearHistoryBtn" class="text-[11px] text-rose-400 hover:text-rose-300 transition">Clear</button>
         </div>
-
-        <div id="historyContainer" class="p-5 space-y-2.5 text-xs text-slate-300 max-h-[360px] overflow-y-auto"></div>
+        <div id="historyContainer" class="p-4 space-y-2 text-xs text-slate-300 max-h-72 overflow-y-auto"></div>
       </div>
     </section>
   </main>
 
   <script>
-    const STORAGE_KEY = 'unofficial_mocky_liquid_v3';
+    const STORAGE_KEY = 'unofficial_mocky_history_v2';
     const DEFAULT_SECRET = 'uY8qN3mXv5B9zW4kP7rT2jE1sQ6cK9hA4fD8gV2bN7mX3pL1zW5kQ8rT0jE2sC9h';
 
     document.getElementById('hostDisplay').textContent = window.location.origin;
@@ -390,11 +303,11 @@
 
     document.getElementById('addHeaderBtn').addEventListener('click', () => {
       const row = document.createElement('div');
-      row.className = 'flex gap-2 header-row toast-enter';
+      row.className = 'flex gap-2 header-row animate-pop';
       row.innerHTML = `
-        <input type="text" placeholder="X-Custom-Header" class="h-key liquid-input w-5/12 px-3 py-2 text-xs font-mono" />
-        <input type="text" placeholder="Header Value" class="h-val liquid-input w-6/12 px-3 py-2 text-xs font-mono" />
-        <button type="button" class="pill-btn w-1/12 text-rose-300 font-bold">&times;</button>
+        <input type="text" placeholder="Header Name" class="h-key custom-input w-5/12 px-2.5 py-1.5 text-xs font-mono" />
+        <input type="text" placeholder="Value" class="h-val custom-input w-6/12 px-2.5 py-1.5 text-xs font-mono" />
+        <button type="button" class="utility-btn w-1/12 text-rose-400 font-bold">&times;</button>
       `;
       row.querySelector('button').addEventListener('click', () => row.remove());
       headersList.appendChild(row);
@@ -406,21 +319,15 @@
         contentEl.value = JSON.stringify(JSON.parse(contentEl.value), null, 2);
         contentTypeEl.value = 'application/json';
       } catch (e) {
-        showError('Invalid JSON syntax: ' + e.message);
+        showError('Invalid JSON format: ' + e.message);
       }
-    });
-
-    document.getElementById('rawTextBtn').addEventListener('click', () => {
-      contentTypeEl.value = 'text/plain';
-      hideError();
     });
 
     document.getElementById('sampleBtn').addEventListener('click', () => {
       contentTypeEl.value = 'application/json';
       contentEl.value = JSON.stringify({
         status: 200,
-        bot: 'QueenBotV2',
-        service: 'mocky',
+        service: 'unofficial-mocky',
         timestamp: new Date().toISOString()
       }, null, 2);
       hideError();
@@ -430,25 +337,25 @@
       const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       const container = document.getElementById('historyContainer');
       if (!items.length) {
-        container.innerHTML = '<p class="text-slate-400/70 text-center py-4">No mocks generated in this browser yet.</p>';
+        container.innerHTML = '<p class="text-slate-500 text-center py-3">No recent endpoints generated.</p>';
         return;
       }
       container.innerHTML = '';
       items.forEach((item) => {
         const div = document.createElement('div');
-        div.className = 'liquid-input p-3 flex items-center justify-between gap-2';
+        div.className = 'custom-input p-2.5 flex items-center justify-between gap-2';
         div.innerHTML = `
           <div class="truncate">
-            <a href="${item.url}" target="_blank" class="font-mono text-indigo-300 hover:text-white transition truncate block">${item.url}</a>
-            <span class="text-[10px] text-slate-400">${item.contentType || 'text/plain'} • HTTP ${item.status || 200}</span>
+            <a href="${item.url}" target="_blank" class="font-mono text-indigo-400 hover:text-white transition truncate block text-[11px]">${item.url}</a>
+            <span class="text-[10px] text-slate-500">HTTP ${item.status}</span>
           </div>
-          <button type="button" class="pill-btn px-2.5 py-1.5 text-[11px] text-white shrink-0">Copy</button>
+          <button type="button" class="utility-btn px-2 py-1 text-[10px] text-white shrink-0">Copy</button>
         `;
         const btn = div.querySelector('button');
         btn.addEventListener('click', () => {
           navigator.clipboard.writeText(item.url);
-          btn.textContent = 'Copied!';
-          setTimeout(() => (btn.textContent = 'Copy'), 1200);
+          btn.textContent = 'Done';
+          setTimeout(() => (btn.textContent = 'Copy'), 1000);
         });
         container.appendChild(div);
       });
@@ -465,7 +372,7 @@
 
       const submitBtn = document.getElementById('submitBtn');
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Generating Liquid Endpoint...';
+      submitBtn.textContent = 'Generating...';
 
       const headers = {};
       document.querySelectorAll('.header-row').forEach((r) => {
@@ -476,20 +383,17 @@
 
       const userSecret = document.getElementById('secret').value.trim() || DEFAULT_SECRET;
       const statusVal = Number(document.getElementById('status').value) || 200;
-      const contentTypeVal = contentTypeEl.value;
 
       const payload = {
         status: statusVal,
         content: contentEl.value,
-        content_type: contentTypeVal,
+        content_type: contentTypeEl.value,
         charset: document.getElementById('charset').value,
         secret: userSecret,
         expiration: document.getElementById('expiration').value
       };
 
-      if (Object.keys(headers).length > 0) {
-        payload.headers = headers;
-      }
+      if (Object.keys(headers).length > 0) payload.headers = headers;
 
       try {
         const res = await fetch('/api/mock', {
@@ -500,13 +404,9 @@
 
         const rawText = await res.text();
         let data = {};
-        try {
-          data = JSON.parse(rawText);
-        } catch (_) {}
+        try { data = JSON.parse(rawText); } catch (_) {}
 
-        if (!res.ok) {
-          throw new Error(data.message || data.error || rawText || `HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error(data.message || data.error || rawText || `HTTP ${res.status}`);
 
         const finalUrl = data.link
           ? data.link.replace(/^http:\/\//i, window.location.protocol + '//')
@@ -520,19 +420,14 @@
         document.getElementById('resultBox').classList.remove('hidden');
 
         const history = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        history.unshift({
-          id: data.id || finalUrl,
-          url: finalUrl,
-          status: statusVal,
-          contentType: contentTypeVal
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0, 25)));
+        history.unshift({ url: finalUrl, status: statusVal });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(history.slice(0, 20)));
         loadHistory();
       } catch (err) {
-        showError('Error creating mock: ' + err.message);
+        showError('Error: ' + err.message);
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Generate Liquid Mock Endpoint';
+        submitBtn.textContent = 'Generate Endpoint';
       }
     });
 
@@ -542,7 +437,7 @@
         navigator.clipboard.writeText(document.getElementById(inputId).value);
         const orig = btn.textContent;
         btn.textContent = 'Copied!';
-        setTimeout(() => (btn.textContent = orig), 1200);
+        setTimeout(() => (btn.textContent = orig), 1000);
       });
     }
 
@@ -555,12 +450,12 @@
       const box = document.getElementById('livePreviewBox');
       const pre = document.getElementById('livePreviewContent');
       box.classList.remove('hidden');
-      pre.textContent = 'Fetching live response...';
+      pre.textContent = 'Loading...';
       try {
         const res = await fetch(url);
         pre.textContent = await res.text();
       } catch (e) {
-        pre.textContent = 'Preview error: ' + e.message;
+        pre.textContent = 'Error: ' + e.message;
       }
     });
 
