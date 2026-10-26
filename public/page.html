@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Unofficial Mocky — View Response</title>
+<link rel="icon" type="image/jpeg" href="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg">
+<meta property="og:image" content="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+--bg-base: #070913;
+--panel-bg: rgba(18, 22, 38, 0.65);
+--panel-border: rgba(255, 255, 255, 0.12);
+--panel-border-hover: rgba(255, 255, 255, 0.22);
+--input-bg: rgba(10, 13, 24, 0.7);
+--accent-grad: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #3b82f6 100%);
+}
+* {
+-webkit-tap-highlight-color: transparent;
+box-sizing: border-box;
+}
+body {
+background-color: var(--bg-base);
+color: #f1f5f9;
+font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", system-ui, sans-serif;
+overflow-x: hidden;
+min-height: 100vh;
+}
+.ambient-bg {
+position: fixed;
+inset: 0;
+z-index: -1;
+overflow: hidden;
+background: radial-gradient(circle at 50% 0%, #151a36 0%, #070913 100%);
+}
+.glow-blob {
+position: absolute;
+border-radius: 50%;
+filter: blur(85px);
+opacity: 0.5;
+animation: drift 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+will-change: transform;
+}
+.blob-1 { width: 450px; height: 450px; background: #4f46e5; top: -10%; left: -5%; }
+.blob-2 { width: 400px; height: 400px; background: #db2777; bottom: -10%; right: -5%; animation-delay: -7s; }
+@keyframes drift {
+0% { transform: translate3d(0, 0, 0) scale(1); }
+100% { transform: translate3d(40px, -40px, 0) scale(1.1); }
+}
+.glass-panel {
+background: var(--panel-bg);
+backdrop-filter: blur(24px) saturate(180%);
+-webkit-backdrop-filter: blur(24px) saturate(180%);
+border: 1px solid var(--panel-border);
+box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+border-radius: 20px;
+transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.custom-input {
+background: var(--input-bg);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 12px;
+color: #f8fafc;
+}
+.gradient-btn {
+background: var(--accent-grad);
+background-size: 200% 200%;
+border: 1px solid rgba(255, 255, 255, 0.25);
+box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+border-radius: 14px;
+transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.gradient-btn:hover {
+transform: translateY(-1px);
+box-shadow: 0 14px 30px -5px rgba(129, 140, 248, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+.utility-btn {
+background: rgba(255, 255, 255, 0.06);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 10px;
+transition: all 0.2s ease;
+}
+.utility-btn:hover {
+background: rgba(255, 255, 255, 0.12);
+}
+.animate-pop {
+animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes popIn {
+0% { opacity: 0; transform: scale(0.96) translateY(10px); }
+100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+pre {
+scrollbar-width: thin;
+scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+pre::-webkit-scrollbar {
+width: 6px;
+height: 6px;
+}
+pre::-webkit-scrollbar-thumb {
+background: rgba(255,255,255,0.2);
+border-radius: 10px;
+}
+</style>
+</head>
+<body class="pb-12">
+<div class="ambient-bg">
+<div class="glow-blob blob-1"></div>
+<div class="glow-blob blob-2"></div>
+</div>
+
+<header class="sticky top-3 z-30 mx-auto max-w-5xl px-4">
+<div class="glass-panel px-4 py-3 flex items-center justify-between">
+<a href="/" class="flex items-center gap-3 group">
+<img src="https://i.postimg.cc/MpS04bjb/c6df274a42cb9a60d5e8c3e17c393092.jpg" alt="Logo" class="h-10 w-10 rounded-xl object-cover border border-white/20 shadow-md transition group-hover:scale-105" />
+<div>
+<h1 class="text-sm sm:text-base font-bold text-white tracking-tight">Unofficial Mocky</h1>
+<p class="text-[11px] text-slate-400 font-mono truncate max-w-[200px] sm:max-w-xs" id="hostDisplay"></p>
+</div>
+</a>
+<div class="flex items-center gap-2">
+<a href="/" class="utility-btn px-3 py-1.5 text-xs font-medium text-slate-200">Create New</a>
+</div>
+</div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 pt-6">
+<div class="glass-panel overflow-hidden animate-pop">
+<div class="px-5 py-4 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/[0.02]">
+<div>
+<h2 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+<span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+Response Viewer
+</h2>
+<p class="text-xs text-slate-400 mt-1 font-mono break-all" id="rawUrlDisplay">Loading...</p>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button id="copyBtn" class="utility-btn px-4 py-2 text-xs font-medium text-white">Copy Content</button>
+<a id="openRawBtn" href="#" target="_blank" class="gradient-btn px-4 py-2 text-xs font-semibold text-white text-center">Open Raw</a>
+</div>
+</div>
+
+<div class="p-0 relative">
+<div id="loader" class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm z-10 min-h-[300px]">
+<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+</div>
+<pre id="codeBlock" class="custom-input m-4 p-5 text-xs sm:text-sm font-mono text-slate-200 overflow-auto min-h-[300px] max-h-[60vh] opacity-0 transition-opacity duration-300"></pre>
+</div>
+</div>
+</main>
+
+<script>
+document.getElementById('hostDisplay').textContent = window.location.origin;
+const pathParts = window.location.pathname.split('/').filter(Boolean);
+const mockId = pathParts[pathParts.length - 1];
+const rawUrl = `${window.location.origin}/v3/${mockId}`;
+document.getElementById('rawUrlDisplay').textContent = rawUrl;
+document.getElementById('openRawBtn').href = rawUrl;
+const codeBlock = document.getElementById('codeBlock');
+const loader = document.getElementById('loader');
+const copyBtn = document.getElementById('copyBtn');
+
+async function fetchMock() {
+try {
+const response = await fetch(rawUrl);
+const contentType = response.headers.get('content-type') || '';
+let text = await response.text();
+if (contentType.includes('application/json')) {
+try { text = JSON.stringify(JSON.parse(text), null, 2); } catch (e) {}
+}
+codeBlock.textContent = text;
+codeBlock.classList.remove('opacity-0');
+loader.classList.add('hidden');
+} catch (err) {
+codeBlock.textContent = `Error loading mock endpoint:\n${err.message}\n\nThe endpoint might have expired or the ID is invalid.`;
+codeBlock.classList.remove('opacity-0');
+loader.classList.add('hidden');
+codeBlock.classList.add('text-rose-400');
+}
+}
+
+copyBtn.addEventListener('click', () => {
+if (!codeBlock.textContent) return;
+navigator.clipboard.writeText(codeBlock.textContent);
+const orig = copyBtn.textContent;
+copyBtn.textContent = 'Copied!';
+setTimeout(() => (copyBtn.textContent = orig), 1500);
+});
+
+if (mockId) fetchMock();
+else {
+codeBlock.textContent = 'No Mock ID provided in the URL.';
+codeBlock.classList.remove('opacity-0');
+loader.classList.add('hidden');
+codeBlock.classList.add('text-rose-400');
+}
+</script>
+</body>
+</html>
